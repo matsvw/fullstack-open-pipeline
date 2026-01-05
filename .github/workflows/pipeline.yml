@@ -103,6 +103,13 @@ jobs:
           name: backend-build
           path: dist
 
+      - name: Install backend production dependencies in dist
+        run: |
+          cd dist
+          npm ci --production
+        env:
+          NODE_ENV: prod
+
       - name: Download frontend build artifact into public folder
         uses: actions/download-artifact@v4
         with:
