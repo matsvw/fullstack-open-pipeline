@@ -1,0 +1,38 @@
+{
+  "name": "part_5",
+  "version": "1.0.0",
+  "description": "Exercises for part 5",
+  "license": "MIT",
+  "author": "Mats von Weissenberg",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "npm run clean && rsync -av --exclude='backup' --exclude='requests' --exclude='.git' --exclude='node_modules' ./ dist/",
+    "start": "cross-env NODE_ENV=prod node index.js",
+    "dev": "cross-env NODE_ENV=dev nodemon index.js",
+    "test": "cross-env NODE_ENV=test node --test",
+    "start:test": "cross-env NODE_ENV=test node --watch index.js",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cross-env": "^10.1.0",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "lodash": "^4.17.21",
+    "mongoose": "^9.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@stylistic/eslint-plugin": "^5.6.1",
+    "eslint": "^9.39.1",
+    "globals": "^16.5.0",
+    "nodemon": "^3.1.11",
+    "supertest": "^7.1.4"
+  },
+  "engines": {
+    "node": ">=24 <25"
+  }
+}

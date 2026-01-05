@@ -1,0 +1,19 @@
+GET http://localhost:3003/api/blogs?expand=true
+
+###
+GET http://localhost:3003/api/blogs/692844d5a0577cab56443879
+
+### 
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QiLCJpZCI6IjY5MjlhMjIyMjczN2UzNTRjOTFlOGMxZSIsImlhdCI6MTc2NDU4NzcxNn0.OdwXEHwqoU3hoFhPrTJjBOg0kI9csAYAInbu9m4ehtg
+
+{
+  "title": "This is a new blog",
+  "author": "John Doe",
+  "url": "http://example.com/new-blog",
+  "likes": 0
+}
+
+###
+DELETE http://localhost:3003/api/blogs/5
