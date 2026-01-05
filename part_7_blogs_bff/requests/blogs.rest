@@ -1,7 +1,7 @@
 GET http://localhost:3003/api/blogs?expand=true
 
 ###
-GET http://localhost:3003/api/blogs/692844d5a0577cab56443879
+GET http://localhost:3003/api/blogs/692d8051441ea93f78724e72?expand=true
 
 ### 
 POST http://localhost:3003/api/blogs

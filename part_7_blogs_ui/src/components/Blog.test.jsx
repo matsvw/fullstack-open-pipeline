@@ -1,9 +1,13 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { expect, vi } from 'vitest'
 import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
+import { renderWithProviders } from '../helpers/testHelper'
+import blogService from '../services/blogs'
 
-vi.mock('../services/blogs') // Mock the blog service
+vi.mock('../services/blogs')
+vi.mock('../services/login')
+vi.mock('../services/users')
 
 beforeAll(() => {
   vi.spyOn(window, 'confirm').mockImplementation(() => true) // Mock window.confirm to always return true
@@ -15,118 +19,64 @@ describe('<Blog />', () => {
     author: 'Test blog author',
     url: 'http://testurl.com',
     likes: 5,
-    user: {
-      name: 'Test User',
-      username: 'testuser',
-    },
+    id: 'abc123',
   }
 
   const blogUser = {
     name: 'Test User',
-    username: 'testuser',
+    username: 'root',
   }
 
-  test('renders content', async () => {
-    const mockRemovedHandler = vi.fn()
-    const mockUpdatedHandler = vi.fn()
-
-    render(
-      <Blog
-        blog={blog}
-        user={blogUser}
-        handleBlogRemoved={mockRemovedHandler}
-        handleBlogUpdated={mockUpdatedHandler}
-      />
-    )
-    // user this to dump the rendered HTML to the console
-    screen.debug()
-
-    screen.getByText(blog.title)
-    const authorElement = screen.queryByText(blog.author)
-    const urlElement = screen.queryByText(blog.url)
-
-    expect(!authorElement, 'author should not be visible').toBe(true)
-    expect(!urlElement, 'url should not be visible').toBe(true)
+  beforeEach(() => {
+    vi.clearAllMocks()
+    blogService.getOne.mockResolvedValue({
+      ...blog,
+      user: blogUser,
+      comments: [],
+    })
   })
 
-  test('view button works', async () => {
-    const mockRemovedHandler = vi.fn()
-    const mockUpdatedHandler = vi.fn()
+  test('renders content after loading', async () => {
+    renderWithProviders(<Blog />)
 
-    const user = userEvent.setup()
+    // wait for the async query to resolve and the title to appear
+    await screen.findByText(blog.title)
 
-    render(
-      <Blog
-        blog={blog}
-        user={blogUser}
-        handleBlogRemoved={mockRemovedHandler}
-        handleBlogUpdated={mockUpdatedHandler}
-      />
-    )
-
-    const viewButton = screen.getByText('view')
-    await user.click(viewButton)
-
-    screen.getByText(blog.author)
-    screen.getByText(blog.url)
+    // details are shown by the component after loading
+    expect(screen.getByText(`Author: ${blog.author}`)).toBeTruthy()
+    expect(screen.getByText(blog.url)).toBeTruthy()
   })
 
-  test('like button works', async () => {
-    const mockRemovedHandler = vi.fn()
-    const mockUpdatedHandler = vi.fn()
+  test('like button calls update twice', async () => {
+    blogService.update.mockResolvedValue({ ...blog, likes: blog.likes + 1 })
 
     const user = userEvent.setup()
+    renderWithProviders(<Blog />)
 
-    render(
-      <Blog
-        blog={blog}
-        user={blogUser}
-        handleBlogRemoved={mockRemovedHandler}
-        handleBlogUpdated={mockUpdatedHandler}
-      />
-    )
+    await screen.findByText(blog.title)
 
-    const viewButton = screen.getByText('view')
-    await user.click(viewButton)
-
-    const likeButton = screen.getByText('like')
+    const likeButton = screen.getByText('Like')
     await user.click(likeButton)
     await user.click(likeButton)
 
-    expect(mockUpdatedHandler.mock.calls).toHaveLength(2)
-    expect(mockRemovedHandler.mock.calls).toHaveLength(0)
-
-    expect(mockUpdatedHandler.mock.calls[0][0].likes).toBe(blog.likes + 1) // as the component state does not update the blog prop, this will not increment more than 1
+    expect(blogService.update).toHaveBeenCalledTimes(2)
   })
 
-  test('remove button works', async () => {
-    const mockRemovedHandler = vi.fn()
-    const mockUpdatedHandler = vi.fn()
-
-    const blogUser = {
-      name: 'Test User',
-      username: 'testuser',
-    }
+  test('remove button calls remove after confirm', async () => {
+    blogService.remove.mockResolvedValue({ success: true, id: blog.id })
 
     const user = userEvent.setup()
+    renderWithProviders(<Blog />)
 
-    render(
-      <Blog
-        blog={blog}
-        user={blogUser}
-        handleBlogRemoved={mockRemovedHandler}
-        handleBlogUpdated={mockUpdatedHandler}
-      />
-    )
+    await screen.findByText(blog.title)
 
-    const viewButton = screen.getByText('view')
-    await user.click(viewButton)
+    const deleteButton = screen.getByText('Delete')
+    await user.click(deleteButton)
 
-    expect(mockUpdatedHandler.mock.calls).toHaveLength(0)
+    // the Alert dialog uses an 'OK' button to confirm
+    const okButton = await screen.findByText('OK')
+    await user.click(okButton)
 
-    const removeButton = screen.getByText('remove')
-    await user.click(removeButton)
-
-    expect(mockRemovedHandler.mock.calls).toHaveLength(1)
+    expect(blogService.remove).toHaveBeenCalledTimes(1)
   })
 })

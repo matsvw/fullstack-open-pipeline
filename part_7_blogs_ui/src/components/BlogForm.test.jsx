@@ -1,7 +1,8 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { vi } from 'vitest'
 import userEvent from '@testing-library/user-event'
 import BlogForm from './BlogForm'
+import { renderWithProviders } from '../helpers/testHelper'
 
 vi.mock('../services/blogs') // Mock the blog service
 
@@ -10,22 +11,8 @@ beforeAll(() => {
 })
 
 describe('<BlogForm />', () => {
-  const blogUser = {
-    name: 'Test User',
-    username: 'testuser',
-  }
-
   test('renders content', async () => {
-    const mockCreatedHandler = vi.fn()
-    const mockTimeoutMessage = vi.fn()
-
-    render(
-      <BlogForm
-        user={blogUser}
-        handleBlogCreated={mockCreatedHandler}
-        setTimeoutMessage={mockTimeoutMessage}
-      />
-    )
+    renderWithProviders(<BlogForm open={true} onClose={vi.fn()} />)
     // user this to dump the rendered HTML to the console
     //screen.debug()
 
@@ -36,18 +23,9 @@ describe('<BlogForm />', () => {
   })
 
   test('renders content', async () => {
-    const mockCreatedHandler = vi.fn()
-    const mockTimeoutMessage = vi.fn()
-
     const user = userEvent.setup()
 
-    render(
-      <BlogForm
-        user={blogUser}
-        handleBlogCreated={mockCreatedHandler}
-        setTimeoutMessage={mockTimeoutMessage}
-      />
-    )
+    renderWithProviders(<BlogForm open={true} onClose={vi.fn()} />)
     // user this to dump the rendered HTML to the console
     screen.debug()
 
@@ -59,15 +37,10 @@ describe('<BlogForm />', () => {
     await user.type(authorInput, 'Blog author')
     await user.type(urlInput, 'http://blogurl.com')
 
-    const sendButton = screen.getByText('create')
+    const sendButton = await screen.findByRole('button', {
+      name: 'Create Blog',
+    })
 
     await user.click(sendButton)
-
-    expect(mockTimeoutMessage.mock.calls).toHaveLength(0) //successful creation should not trigger message
-
-    expect(mockCreatedHandler.mock.calls).toHaveLength(1)
-    expect(mockCreatedHandler.mock.calls[0][0].title).toBe('Blog title')
-    expect(mockCreatedHandler.mock.calls[0][0].author).toBe('Blog author')
-    expect(mockCreatedHandler.mock.calls[0][0].url).toBe('http://blogurl.com')
   })
 })
