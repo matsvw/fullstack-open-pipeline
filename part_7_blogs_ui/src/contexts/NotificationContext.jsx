@@ -17,13 +17,13 @@ const notificationReducer = (state, action) => {
 const NotificationContext = createContext({
   notification: null,
   // no-op fallback avoids undefined errors if misused
-  notificationDispatch: () => { },
+  notificationDispatch: () => {},
 })
 
 export const NotificationContextProvider = (props) => {
   const [notification, notificationDispatch] = useReducer(
     notificationReducer,
-    null,
+    null
   )
 
   return (

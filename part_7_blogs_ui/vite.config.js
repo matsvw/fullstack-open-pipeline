@@ -1,21 +1,21 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: "0.0.0.0", //this is critical for Firefox for Playwright to work
+    host: '0.0.0.0', //this is critical for Firefox for Playwright to work
     proxy: {
-      "/api": {
-        target: "http://localhost:3003",
+      '/api': {
+        target: 'http://localhost:3003',
         changeOrigin: true,
       },
     },
   },
   test: {
-    environment: "jsdom",
+    environment: 'jsdom',
     globals: true,
-    setupFiles: "./testSetup.js",
+    setupFiles: './testSetup.js',
   },
-});
+})

@@ -33,7 +33,7 @@ const userReducer = (state, action) => {
 const UserContext = createContext({
   userState: null,
   // no-op fallback avoids undefined errors if misused
-  userDispatch: () => { },
+  userDispatch: () => {},
 })
 
 export const UserContextProvider = (props) => {

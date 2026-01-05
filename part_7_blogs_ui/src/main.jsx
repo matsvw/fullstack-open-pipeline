@@ -5,7 +5,7 @@ import { UserContextProvider } from './contexts/UserContext'
 import { NotificationContextProvider } from './contexts/NotificationContext'
 
 import App from './App'
-import "./index.css";
+import './index.css'
 
 const queryClient = new QueryClient()
 

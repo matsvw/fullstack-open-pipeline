@@ -54,7 +54,9 @@ const MenuBar = ({ maxWidth: maxMenuWidth }) => {
     <AppBar position="static">
       <LoginForm open={loginOpen} onClose={() => setLoginOpen(false)} />
       <Container maxWidth={maxMenuWidth}>
-        <Toolbar sx={{ paddingLeft: '0 !important', paddingRight: '0 !important' }}>
+        <Toolbar
+          sx={{ paddingLeft: '0 !important', paddingRight: '0 !important' }}
+        >
           {isMobile && (
             <IconButton
               size="large"
