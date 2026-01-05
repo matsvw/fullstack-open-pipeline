@@ -10,7 +10,7 @@ on:
     types: [opened, synchronize]
 
 env:
-  MONGO_AVAILABLE: true
+  MONGO_AVAILABLE: false
 
 jobs:
   frontend-ci:
