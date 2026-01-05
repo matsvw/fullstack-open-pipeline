@@ -30,6 +30,7 @@ before(async () => {
     })
 
   validToken = validTokenResponse.body.token
+  assert(validToken, 'valid token not set')
   logger.info('valid token for tests: ', validToken)
 
   const invalidTokenResponse = await api.post('/api/login').send(
@@ -39,6 +40,7 @@ before(async () => {
     })
 
   invalidToken = invalidTokenResponse.body.token
+  assert(invalidToken, 'invalid token not set')
   logger.info('invalidvalid token for tests: ', invalidToken)
 
   logger.info(userId)
@@ -91,7 +93,7 @@ describe('adding a new blog', () => {
 
 
     // eslint-disable-next-line no-unused-vars
-    const { userId, ...expectedBlog } = { ...newBlog, id: resultBlog.body.id, user: helper.blogList[0].user.toString() } //remove userId and add id + user
+    const { userId, ...expectedBlog } = { ...newBlog, id: resultBlog.body.id, user: helper.blogList[0].user.toString(), comments: [] } //remove userId and add id + user + default comments
     assert.deepStrictEqual(resultBlog.body, expectedBlog)
 
     const blogsAtEnd = await helper.blogsInDb()
@@ -138,7 +140,7 @@ describe('adding a new blog', () => {
       .expect('Content-Type', /application\/json/)
 
     // eslint-disable-next-line no-unused-vars
-    const { userId, ...expectedBlog } = { ...newBlog, id: resultBlog.body.id, user: helper.blogList[0].user.toString(), likes: 0 } //remove userId and add id, user and likes
+    const { userId, ...expectedBlog } = { ...newBlog, id: resultBlog.body.id, user: helper.blogList[0].user.toString(), likes: 0, comments: [] } //remove userId and add id, user, likes and default comments
     assert.deepStrictEqual(resultBlog.body, expectedBlog)
 
     const blogsAtEnd = await helper.blogsInDb()
