@@ -9,6 +9,9 @@ on:
     branches: [main]
     types: [opened, synchronize]
 
+env:
+  MONGO_AVAILABLE: true
+
 jobs:
   frontend-ci:
     name: Frontend Lint, Test & Build
@@ -73,6 +76,7 @@ jobs:
         run: npm run lint
 
       - name: Test
+        if: ${{ env.MONGO_AVAILABLE }}
         run: npm run test
         env:
           TEST_MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
@@ -106,7 +110,7 @@ jobs:
       - name: Install backend production dependencies in dist
         run: |
           cd dist
-          npm ci --production
+          npm ci --omit=dev
         env:
           NODE_ENV: prod
 
@@ -116,15 +120,12 @@ jobs:
           name: frontend-build
           path: dist/public
 
-      - name: Show combined package contents
-        run: ls -R dist
-
       - name: Create deployment ZIP
         run: |
           cd dist
           zip -r ../deploy.zip .
 
-      - name: Deploy to Azure Web App (on push to main)
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'fullstack-pipeline'
