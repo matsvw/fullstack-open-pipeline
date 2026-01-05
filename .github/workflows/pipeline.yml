@@ -43,6 +43,7 @@ jobs:
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
+        if: ${{ github.event_name == 'push' }}
         with:
           name: frontend-build
           path: part_7_blogs_ui/dist
@@ -85,6 +86,7 @@ jobs:
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
+        if: ${{ github.event_name == 'push' }}
         with:
           name: backend-build
           path: part_7_blogs_bff/dist          
@@ -93,6 +95,7 @@ jobs:
     name: Deploy backend with frontend artifact
     needs: [frontend-ci, backend-ci]
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' }}
 
     steps:
       - name: Checkout repository
