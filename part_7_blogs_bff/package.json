@@ -9,15 +9,14 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build": "npm run clean && rsync -av --exclude='backup' --exclude='requests' --exclude='.git' --exclude='node_modules' ./ dist/",
-    "start": "cross-env NODE_ENV=prod node index.js",
-    "dev": "cross-env NODE_ENV=dev nodemon index.js",
-    "test": "cross-env NODE_ENV=test node --test",
-    "start:test": "cross-env NODE_ENV=test node --watch index.js",
+    "start": "set NODE_ENV=prod && node index.js",
+    "dev": "set NODE_ENV=dev && nodemon index.js",
+    "test": "set NODE_ENV=test && node --test",
+    "start:test": "set NODE_ENV=test && node --watch index.js",
     "lint": "eslint ."
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
-    "cross-env": "^10.1.0",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
