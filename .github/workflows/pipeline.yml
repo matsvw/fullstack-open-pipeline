@@ -9,9 +9,6 @@ on:
     branches: [main]
     types: [opened, synchronize]
 
-env:
-  MONGO_AVAILABLE: true
-
 jobs:
   frontend-ci:
     name: Frontend Lint, Test & Build
@@ -46,6 +43,7 @@ jobs:
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
+        if: ${{ github.event_name == 'push' }}
         with:
           name: frontend-build
           path: part_7_blogs_ui/dist
@@ -76,7 +74,7 @@ jobs:
         run: npm run lint
 
       - name: Test
-        if: ${{ env.MONGO_AVAILABLE }}
+        if: ${{ vars.MONGO_AVAILABLE != 'false' }}
         run: npm run test
         env:
           TEST_MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
@@ -88,6 +86,7 @@ jobs:
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
+        if: ${{ github.event_name == 'push' }}
         with:
           name: backend-build
           path: part_7_blogs_bff/dist          
@@ -96,6 +95,7 @@ jobs:
     name: Deploy backend with frontend artifact
     needs: [frontend-ci, backend-ci]
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' }}
 
     steps:
       - name: Checkout repository
